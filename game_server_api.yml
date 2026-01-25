@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  description: This API receives player telemetry and server data in batches from Connor's game servers around the world
+  version: "1.0.0"
+  title: Game Server API
+  contact:
+    email: cbell86@my.bcit.ca
+paths:
+  /events/server-health:
+    post:
+      summary: Reports health of servers
+      operationId: app.report_server_health_readings
+      description: Adds a batch of server statistics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerHealthBatch' 
+      responses:
+        '201':
+          description: 'batch successfully received'
+        '400':
+          description: 'invalid input, object is invalid'
+
+  /events/player-telemetry:
+    post:
+      summary: Reports batch of player telemetry
+      operationId: app.report_player_telemetry_event
+      description: Adds a batch of player telemetry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerTelemetryBatch'
+      responses:
+        '201':
+          description: 'batch successfully received'
+        '400':
+          description: 'invalid input, object is invalid'
+
+components:
+  schemas:
+    ServerHealthBatch:
+      type: object
+      required:
+      - server_id
+      - sent_timestamp
+      - batch_id
+      - server_region
+      - readings
+      properties:
+        server_id:
+          type: string
+          format: uuid
+          description: ID of the server/device sending this batch. Same across batches from that sender.
+          example: "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e"
+        sent_timestamp:
+          type: string
+          format: date-time
+          description: Date/time the batch was sent by the sender.
+          example: "2026-01-08T22:15:30Z"
+        batch_id:
+          type: string
+          format: uuid
+          description: Unique id for this batch request.
+          example: "2c11dd14-dd4e-492c-a697-f39b6dbb2426"
+        server_region:
+          type: string
+          description: Region/cluster where the sender lives.
+          example: "ca-west-1"
+        readings:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServerHealthReading"
+
+    ServerHealthReading:
+      required:
+      - active_players
+      - cpu_usage
+      - ram_usage
+      - recorded_timestamp
+      properties:
+        server_id:
+          type: string
+          format: uuid
+          example: "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e" 
+        server_location:
+          type: string
+          example: "Vancouver"
+        active_players:
+          type: integer
+          description: Number of active players at moment of reading
+          example: 231
+        cpu_usage:
+          type: number
+          example: 87.9
+        ram_usage:
+          type: number
+          example: 54.1
+        recorded_timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-08T22:15:30Z"
+      type: object
+
+    PlayerTelemetryBatch:
+      required:
+      - server_id
+      - sent_timestamp
+      - batch_id
+      - events
+      properties:
+        server_id:
+          type: string
+          format: uuid
+          example: "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e"
+        sent_timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-08T22:16:10Z"
+        batch_id:
+          type: string
+          format: uuid
+          description: Unique id for this batch request.
+          example: "a12f0c99-0a6c-4c55-b2a9-5f3a5c6a90d1"
+        server_region:
+          type: string
+          example: "ca-west-1"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerTelemetryEvent"
+
+
+    
+    PlayerTelemetryEvent:
+      required:
+      - player_id
+      - event_timestamp
+      - player_ping
+      properties:
+        player_id:
+          type: string
+          format: uuid
+          example: "2c11dd14-dd4e-492c-a697-f39b6dbb2426"
+        event_timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-08T22:16:01Z"
+        player_ping:
+          type: integer
+          description: player ping in milliseconds
+          example: 41
+        player_level:
+          type: integer
+          example: 99
+        action:
+          type: string
+          description: type of action/event
+          enum: [login, logout, kill, death, level_up, chat_message]
+          example: "level_up"
+      type: object
