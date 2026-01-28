@@ -1,91 +1,85 @@
 openapi: 3.0.0
 info:
-  description: This API receives player telemetry and server data in batches from Connor's game servers around the world
+  description: Storage API for persisting individual server health readings and player telemetry events
   version: "1.0.0"
-  title: Game Server API
+  title: Game Server Storage API
   contact:
     email: cbell86@my.bcit.ca
+
 paths:
   /events/server-health:
     post:
-      summary: Reports health of servers
-      operationId: app.report_server_health_readings
-      description: Adds a batch of server statistics
+      summary: Persist a single server health reading
+      operationId: app.report_server_health_reading
+      description: Receives ONE server health reading (batch + reading fields) and stores it in the database
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServerHealthBatch' 
+              $ref: '#/components/schemas/ServerHealthReading'
       responses:
         '201':
-          description: 'batch successfully received'
+          description: reading successfully stored
         '400':
-          description: 'invalid input, object is invalid'
+          description: invalid input, object is invalid
 
   /events/player-telemetry:
     post:
-      summary: Reports batch of player telemetry
+      summary: Persist a single player telemetry event
       operationId: app.report_player_telemetry_event
-      description: Adds a batch of player telemetry
+      description: Receives ONE player telemetry event (batch + event fields) and stores it in the database
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlayerTelemetryBatch'
+              $ref: '#/components/schemas/PlayerTelemetryEvent'
       responses:
         '201':
-          description: 'batch successfully received'
+          description: event successfully stored
         '400':
-          description: 'invalid input, object is invalid'
+          description: invalid input, object is invalid
 
 components:
   schemas:
-    ServerHealthBatch:
+    ServerHealthReading:
       type: object
       required:
-      - server_id
-      - sent_timestamp
-      - batch_id
-      - server_region
-      - readings
+        - server_id
+        - sent_timestamp
+        - batch_id
+        - server_region
+        - active_players
+        - cpu_usage
+        - ram_usage
+        - recorded_timestamp
       properties:
+        # common (from batch)
         server_id:
           type: string
           format: uuid
-          description: ID of the server/device sending this batch. Same across batches from that sender.
+          description: ID of the server/device sending this data
           example: "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e"
         sent_timestamp:
           type: string
           format: date-time
-          description: Date/time the batch was sent by the sender.
+          description: Date/time the batch was sent by the sender
           example: "2026-01-08T22:15:30Z"
         batch_id:
           type: string
           format: uuid
-          description: Unique id for this batch request.
+          description: Unique id for the batch request this reading came from
           example: "2c11dd14-dd4e-492c-a697-f39b6dbb2426"
         server_region:
           type: string
-          description: Region/cluster where the sender lives.
+          description: Region/cluster where the sender lives
           example: "ca-west-1"
-        readings:
-          type: array
-          items:
-            $ref: "#/components/schemas/ServerHealthReading"
 
-    ServerHealthReading:
-      required:
-      - active_players
-      - cpu_usage
-      - ram_usage
-      - recorded_timestamp
-      properties:
-        server_id:
-          type: string
-          format: uuid
-          example: "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e" 
+        # reading-specific
         server_location:
           type: string
+          description: Optional human-readable location
           example: "Vancouver"
         active_players:
           type: integer
@@ -100,16 +94,20 @@ components:
         recorded_timestamp:
           type: string
           format: date-time
+          description: Date/time this reading was recorded on the server
           example: "2026-01-08T22:15:30Z"
-      type: object
 
-    PlayerTelemetryBatch:
+    PlayerTelemetryEvent:
+      type: object
       required:
-      - server_id
-      - sent_timestamp
-      - batch_id
-      - events
+        - server_id
+        - sent_timestamp
+        - batch_id
+        - player_id
+        - event_timestamp
+        - player_ping
       properties:
+        # common (from batch)
         server_id:
           type: string
           format: uuid
@@ -121,24 +119,14 @@ components:
         batch_id:
           type: string
           format: uuid
-          description: Unique id for this batch request.
+          description: Unique id for the batch request this event came from
           example: "a12f0c99-0a6c-4c55-b2a9-5f3a5c6a90d1"
         server_region:
           type: string
+          description: Region/cluster where the sender lives (optional for telemetry based on your original YAML)
           example: "ca-west-1"
-        events:
-          type: array
-          items:
-            $ref: "#/components/schemas/PlayerTelemetryEvent"
 
-
-    
-    PlayerTelemetryEvent:
-      required:
-      - player_id
-      - event_timestamp
-      - player_ping
-      properties:
+        # event-specific
         player_id:
           type: string
           format: uuid
@@ -153,10 +141,11 @@ components:
           example: 41
         player_level:
           type: integer
+          nullable: true
           example: 99
         action:
           type: string
+          nullable: true
           description: type of action/event
           enum: [login, logout, kill, death, level_up, chat_message]
           example: "level_up"
-      type: object
