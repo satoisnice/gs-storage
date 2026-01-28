@@ -1,0 +1,12 @@
+curl -i -X POST "http://localhost:8089/events/player-telemetry" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "server_id": "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e",
+    "sent_timestamp": "2026-01-08T22:16:10Z",
+    "batch_id": "a12f0c99-0a6c-4c55-b2a9-5f3a5c6a90d1",
+    "player_id": "2c11dd14-dd4e-492c-a697-f39b6dbb2426",
+    "event_timestamp": "2026-01-08T22:16:01Z",
+    "player_ping": 41,
+    "player_level": 99,
+    "action": "level_up"
+  }'

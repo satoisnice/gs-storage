@@ -1,0 +1,24 @@
+curl -i -X POST "http://localhost:8088/events/server-health" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "server_id": "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e",
+    "sent_timestamp": "2026-01-08T22:15:30Z",
+    "batch_id": "2c11dd14-dd4e-492c-a697-f39b6dbb2426",
+    "server_region": "ca-west-1",
+    "readings": [
+      {
+        "server_location": "Vancouver",
+        "active_players": 231,
+        "cpu_usage": 87.9,
+        "ram_usage": 54.1,
+        "recorded_timestamp": "2026-01-08T22:15:30Z"
+      },
+      {
+        "server_location": "Burnaby",
+        "active_players": 190,
+        "cpu_usage": 65.1,
+        "ram_usage": 49.3,
+        "recorded_timestamp": "2026-01-08T22:15:40Z"
+      }
+    ]
+  }'
