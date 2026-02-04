@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column
-from sqlalchemy import Integer, String, Float, DateTime, func
+from sqlalchemy import Integer, String, Float, DateTime, func, BigInteger
 
 class Base(DeclarativeBase):
     pass
@@ -8,6 +8,8 @@ class ServerHealthReading(Base):
     __tablename__ = "server_health_readings"
 
     id = mapped_column(Integer, primary_key=True)
+
+    trace_id = mapped_column(BigInteger, nullable=False)
 
     # batch
     server_id = mapped_column(String(36), nullable=False)
@@ -28,6 +30,8 @@ class PlayerTelemetryEvent(Base):
     __tablename__ = "player_telemetry_events"
 
     id = mapped_column(Integer, primary_key=True)
+
+    trace_id = mapped_column(BigInteger, nullable=False)
 
     # batch
     server_id = mapped_column(String(36), nullable=False)

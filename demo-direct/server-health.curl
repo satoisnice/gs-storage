@@ -1,6 +1,7 @@
 curl -i -X POST "http://localhost:8089/events/server-health" \
   -H "Content-Type: application/json" \
   -d '{
+    "trace_id": 1706915093123456789,
     "server_id": "dc0a7a50-2795-43e3-b6c5-28b69aab1b5e",
     "sent_timestamp": "2026-01-08T22:15:30Z",
     "batch_id": "2c11dd14-dd4e-492c-a697-f39b6dbb2426",

@@ -15,10 +15,9 @@ curl -i -X POST "http://localhost:8088/events/player-telemetry" \
       },
       {
         "player_id": "11111111-2222-3333-4444-555555555555",
-        "event_timestamp": "2026-01-08T22:16:02Z",
-        "player_ping": 55,
-        "player_level": 12,
-        "action": "login"
+        "event_timestamp": "2026-01-08T22:16:03Z",
+        "player_ping": 52,
+        "action": "logout"
       }
     ]
   }'

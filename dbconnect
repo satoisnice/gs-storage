@@ -1,0 +1,1 @@
+docker exec -it mysql-db-1 mysql -u gs_user -pcomputer -D gameserver

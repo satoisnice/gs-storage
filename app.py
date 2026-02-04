@@ -4,14 +4,21 @@ import os
 import json
 import functools
 from datetime import datetime
+import logging
+import logging.config
+import yaml
 
 from db import make_session
 from models import ServerHealthReading, PlayerTelemetryEvent
 
-MAX_BATCH_EVENTS = 5 
 # these files wil be change to url e.g., http://localhost:8088/event/somethign
-PLAYER_TELEMETRY_FILE = "./player_telemetry.json"
-SERVER_HEALTH_FILE = "./server_health.json"
+# change to mysql e.g., mysql://gs_user:computer@localhost
+with open("log_conf.yml", "r") as f:
+    LOG_CONFIG = yaml.safe_load(f.read())
+    logging.config.dictConfig(LOG_CONFIG)
+
+logger = logging.getLogger("basicLogger")
+
 
 def parse_dt(s):
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
@@ -33,6 +40,8 @@ def _save(filename, data):
 def report_server_health_reading(session, body):
     # body is a SINGLE flattened object (storage YAML)
     event = ServerHealthReading(
+        trace_id=body["trace_id"],
+
         server_id=body["server_id"],
         sent_timestamp=parse_dt(body["sent_timestamp"]),
         batch_id=body["batch_id"],
@@ -46,12 +55,15 @@ def report_server_health_reading(session, body):
     )
     session.add(event)
     session.commit()
+    logger.debug("Stored event server_health with a trace id of %s", body["trace_id"])
     return NoContent, 201
 
 
 @use_db_session
 def report_player_telemetry_event(session, body):
     event = PlayerTelemetryEvent(
+        trace_id=body["trace_id"],
+
         server_id=body["server_id"],
         sent_timestamp=parse_dt(body["sent_timestamp"]),
         batch_id=body["batch_id"],
@@ -64,6 +76,7 @@ def report_player_telemetry_event(session, body):
     )
     session.add(event)
     session.commit()
+    logger.debug("Stored event player_telemetry with a trace id of %s", body["trace_id"])
     return NoContent, 201
 
 app = connexion.FlaskApp(__name__, specification_dir='')
