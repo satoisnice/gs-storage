@@ -23,6 +23,35 @@ paths:
           description: reading successfully stored
         '400':
           description: invalid input, object is invalid
+    get:
+      summary: gets a new server health readings
+      operationId: app.get_server_health_readings
+      description: gets server health readings over a timespan
+      parameters:
+        - name: start_timestamp
+          in: query
+          description: Start of the timespan
+          schema:
+            type: string
+            format: date-time
+            example: "2026-01-08T22:15:30Z"
+        - name: end_timestamp
+          in: query
+          description: end of timespan
+          schema:
+            type: string
+            format: date-time
+            example: "2026-01-08T23:15:30Z"
+      responses:
+        '200':
+          description: Successfully returned a list of server health readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServerHealthReading'
+ 
 
   /events/player-telemetry:
     post:
@@ -40,6 +69,36 @@ paths:
           description: event successfully stored
         '400':
           description: invalid input, object is invalid
+    get:
+      summary: gets player telemetry events
+      operationId: app.get_player_telemetry_events
+      description: gets player telemetry events over a timespan
+      parameters:
+        - name: start_timestamp
+          in: query
+          description: Start of the timespan
+          schema:
+            type: string
+            format: date-time
+            example: "2026-01-08T22:15:30Z"
+        - name: end_timestamp
+          in: query
+          description: end of timespan
+          schema:
+            type: string
+            format: date-time
+            example: "2026-01-08T23:15:30Z"
+      responses:
+        '200':
+          description: Successfully returned a list of server health readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerTelemetryEvent'
+          
+
 
 components:
   schemas:
@@ -102,6 +161,12 @@ components:
           format: date-time
           description: Date/time this reading was recorded on the server
           example: "2026-01-08T22:15:30Z"
+        date_created:
+          type: string
+          format: date-time
+          description: Date/time the event was stored in the database (UTC)
+          example: "2026-02-11T00:52:36Z"
+
 
     PlayerTelemetryEvent:
       type: object
@@ -113,6 +178,7 @@ components:
         - player_id
         - event_timestamp
         - player_ping
+        - server_region
       properties:
         # common (from batch)
         trace_id:
@@ -161,3 +227,8 @@ components:
           description: type of action/event
           enum: [login, logout, kill, death, level_up, chat_message]
           example: "level_up"
+        date_created:
+          type: string
+          format: date-time
+          description: Date/time the event was stored in the database (UTC)
+          example: "2026-02-11T00:52:36Z"
