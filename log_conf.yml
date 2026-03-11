@@ -22,6 +22,10 @@ loggers:
     level: DEBUG
     handlers: [console, file]
     propagate: no
+  kafka:
+    level: WARNING
+    handlers: [console]
+    propogate: no
 
 root:
   level: DEBUG

@@ -8,21 +8,21 @@ info:
 
 paths:
   /events/server-health:
-    post:
-      summary: Persist a single server health reading
-      operationId: app.report_server_health_reading
-      description: Receives ONE server health reading (batch + reading fields) and stores it in the database
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ServerHealthReading'
-      responses:
-        '201':
-          description: reading successfully stored
-        '400':
-          description: invalid input, object is invalid
+    # post:
+    #   summary: Persist a single server health reading
+    #   operationId: app.report_server_health_reading
+    #   description: Receives ONE server health reading (batch + reading fields) and stores it in the database
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/ServerHealthReading'
+    #   responses:
+    #     '201':
+    #       description: reading successfully stored
+    #     '400':
+    #       description: invalid input, object is invalid
     get:
       summary: gets a new server health readings
       operationId: app.get_server_health_readings
@@ -54,21 +54,21 @@ paths:
  
 
   /events/player-telemetry:
-    post:
-      summary: Persist a single player telemetry event
-      operationId: app.report_player_telemetry_event
-      description: Receives ONE player telemetry event (batch + event fields) and stores it in the database
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlayerTelemetryEvent'
-      responses:
-        '201':
-          description: event successfully stored
-        '400':
-          description: invalid input, object is invalid
+    # post:
+    #   summary: Persist a single player telemetry event
+    #   operationId: app.report_player_telemetry_event
+    #   description: Receives ONE player telemetry event (batch + event fields) and stores it in the database
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/PlayerTelemetryEvent'
+    #   responses:
+    #     '201':
+    #       description: event successfully stored
+    #     '400':
+    #       description: invalid input, object is invalid
     get:
       summary: gets player telemetry events
       operationId: app.get_player_telemetry_events
